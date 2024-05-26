@@ -1,0 +1,169 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.Scanner;
+import java.util.regex.Pattern;
+
+class Customer {
+    private String firstName;
+    private String lastName;
+    private String mobileNumber;
+    private String email;
+    private String username;
+    private String password;
+    private String accountNumber;
+    private double accountBalance;
+
+    public Customer(String firstName, String lastName, String mobileNumber, String email, String username, String password, String accountNumber) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.mobileNumber = mobileNumber;
+        this.email = email;
+        this.username = username;
+        this.password = password;
+        this.accountNumber = accountNumber;
+        this.accountBalance = 0.0;  // Initial balance is 0
+    }
+
+    @Override
+    public String toString() {
+        return "Customer Profile:\n" +
+                "First Name: " + firstName + "\n" +
+                "Last Name: " + lastName + "\n" +
+                "Mobile Number: " + mobileNumber + "\n" +
+                "Account Number: " + accountNumber + "\n" +
+                "Account Balance: Rs." + accountBalance + "\n";
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+}
+
+public class myBankRegistration {
+    private static List<Customer> customers = new ArrayList<>();
+    private static Random random = new Random();
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("Welcome to myBank!");
+            System.out.println("1. Register");
+            System.out.println("2. Login");
+            System.out.print("Please enter your choice: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine();  // Consume newline
+
+            switch (choice) {
+                case 1:
+                    registerCustomer(scanner);
+                    break;
+                case 2:
+                    System.out.println("The page is under construction.");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+
+    private static void registerCustomer(Scanner scanner) {
+        System.out.print("Enter first name: ");
+        String firstName = scanner.nextLine();
+
+        System.out.print("Enter last name: ");
+        String lastName = scanner.nextLine();
+
+        System.out.print("Enter mobile number: ");
+        String mobileNumber = scanner.nextLine();
+
+        String email;
+        while (true) {
+            System.out.print("Enter email (format: username@gmail.com): ");
+            email = scanner.nextLine();
+            if (!email.matches("^[a-zA-Z0-9._%+-]+@gmail\\.com$")) {
+                System.out.println("Invalid email format. Please try again.");
+            } else if (!isUniqueEmail(email)) {
+                System.out.println("Email already taken. Please try again.");
+            } else {
+                break;
+            }
+        }
+
+        String username;
+        while (true) {
+            System.out.print("Enter username: ");
+            username = scanner.nextLine();
+            if (isUniqueUsername(username)) {
+                break;
+            } else {
+                System.out.println("Username already taken. Please try again.");
+            }
+        }
+
+        String password;
+        while (true) {
+            System.out.print("Enter password (must contain uppercase, lowercase, digit, and special character): ");
+            password = scanner.nextLine();
+            if (isValidPassword(password)) {
+                break;
+            } else {
+                System.out.println("Invalid password. Please try again.");
+            }
+        }
+
+        String accountNumber = generateUniqueAccountNumber();
+        Customer customer = new Customer(firstName, lastName, mobileNumber, email, username, password, accountNumber);
+        customers.add(customer);
+        System.out.println(customer);
+        System.out.println("Customer profile is created.");
+    }
+
+    private static boolean isUniqueUsername(String username) {
+        for (Customer customer : customers) {
+            if (customer.getUsername().equals(username)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean isUniqueEmail(String email) {
+        for (Customer customer : customers) {
+            if (customer.getEmail().equals(email)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean isValidPassword(String password) {
+        return password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$");
+    }
+
+    private static String generateUniqueAccountNumber() {
+        String accountNumber;
+        do {
+            accountNumber = String.format("%010d", random.nextInt(1000000000));
+        } while (!isUniqueAccountNumber(accountNumber));
+        return accountNumber;
+    }
+
+    private static boolean isUniqueAccountNumber(String accountNumber) {
+        for (Customer customer : customers) {
+            if (customer.getAccountNumber().equals(accountNumber)) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
