@@ -3,7 +3,7 @@ public class Customer {
     private String lastName;
     private String mobileNumber;
     private String email;
-    private String username;
+    private String username; //u
     private String password;
     private String accountNumber;
     private double accountBalance;

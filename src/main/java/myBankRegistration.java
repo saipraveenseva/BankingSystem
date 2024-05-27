@@ -117,7 +117,7 @@ public class myBankRegistration {
             } else {
                 System.out.println("Invalid password. Please try again.");
             }
-        }
+        } //u
 
         String accountNumber = generateUniqueAccountNumber(connection);
         double accountBalance = 0.0;
