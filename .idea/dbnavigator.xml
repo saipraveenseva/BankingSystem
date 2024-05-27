@@ -35,7 +35,7 @@
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="fcaa044a-4c88-4a53-80e7-d4ea4e8f439a">
-      <console name="MySQLConnection" type="STANDARD" schema="mybankdb" session="Main"><![CDATA[delete from mybankdb.customers where id=1;]]></console>
+      <console name="MySQLConnection" type="STANDARD" schema="mybankdb" session="Main"><![CDATA[select * from customers;]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">
@@ -44,7 +44,6 @@
   <component name="DBNavigator.Project.DatabaseFileManager">
     <open-files>
       <object connection-id="fcaa044a-4c88-4a53-80e7-d4ea4e8f439a" object-ref="schemas/mybankdb/tables/customers" />
-      <object connection-id="fcaa044a-4c88-4a53-80e7-d4ea4e8f439a" object-ref="consoles/MySQLConnection" />
     </open-files>
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">

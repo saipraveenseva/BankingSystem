@@ -26,12 +26,13 @@ public class myBankRegistration {
             Scanner scanner = new Scanner(System.in);
 
             while (true) {
+
                 System.out.println("Welcome to myBank!");
                 System.out.println("1. Register");
                 System.out.println("2. Login");
                 System.out.print("Please enter your choice: ");
                 int choice = scanner.nextInt();
-                scanner.nextLine();  // Consume newline
+                scanner.nextLine();
 
                 switch (choice) {
                     case 1:
@@ -39,9 +40,15 @@ public class myBankRegistration {
                         break;
                     case 2:
                         System.out.println("The page is under construction.");
+                        System.out.println();
+                        System.out.println();
+                        System.out.println();
                         break;
                     default:
                         System.out.println("Invalid choice. Please try again.");
+                        System.out.println();
+                        System.out.println();
+                        System.out.println();
                 }
             }
         } catch (SQLException e) {
@@ -115,32 +122,36 @@ public class myBankRegistration {
         String accountNumber = generateUniqueAccountNumber(connection);
         double accountBalance = 0.0;
 
-        String insertCustomerSQL = "INSERT INTO customers (first_name, last_name, mobile_number, email, username, password, account_number, account_balance) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(insertCustomerSQL)) {
-            preparedStatement.setString(1, firstName);
-            preparedStatement.setString(2, lastName);
-            preparedStatement.setString(3, mobileNumber);
-            preparedStatement.setString(4, email);
-            preparedStatement.setString(5, username);
-            preparedStatement.setString(6, password);
-            preparedStatement.setString(7, accountNumber);
-            preparedStatement.setDouble(8, accountBalance);
+        Customer customer = new Customer(firstName, lastName, mobileNumber, email, username, password, accountNumber, accountBalance);
 
-            preparedStatement.executeUpdate();
+        try {
+            saveToDatabase(connection, customer);
             connection.commit(); // Commit the transaction
+            displayCustomerInfo(customer);
         } catch (SQLException e) {
             connection.rollback(); // Rollback in case of error
             e.printStackTrace();
         }
+    }
 
-        System.out.println("Customer Profile:");
-        System.out.println("First Name: " + firstName);
-        System.out.println("Last Name: " + lastName);
-        System.out.println("Mobile Number: " + mobileNumber);
-        System.out.println("Account Number: " + accountNumber);
-        System.out.println("Account Balance: $" + accountBalance);
-        System.out.println("Customer profile is created.");
+    private static String generateUniqueAccountNumber(Connection connection) throws SQLException {
+        String accountNumber;
+        do {
+            accountNumber = String.format("%010d", random.nextInt(1000000000));
+        } while (!isUniqueAccountNumber(connection, accountNumber));
+        return accountNumber;
+    }
+
+    private static boolean isUniqueAccountNumber(Connection connection, String accountNumber) throws SQLException {
+        String query = "SELECT COUNT(*) FROM customers WHERE account_number = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, accountNumber);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt(1) == 0;
+            }
+        }
+        return false;
     }
 
     private static boolean isUniqueUsername(Connection connection, String username) throws SQLException {
@@ -171,23 +182,37 @@ public class myBankRegistration {
         return password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$");
     }
 
-    private static String generateUniqueAccountNumber(Connection connection) throws SQLException {
-        String accountNumber;
-        do {
-            accountNumber = String.format("%010d", random.nextInt(1000000000));
-        } while (!isUniqueAccountNumber(connection, accountNumber));
-        return accountNumber;
+    private static void saveToDatabase(Connection connection, Customer customer) throws SQLException {
+        String insertCustomerSQL = "INSERT INTO customers (first_name, last_name, mobile_number, email, username, password, account_number, account_balance) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(insertCustomerSQL)) {
+            preparedStatement.setString(1, customer.getFirstName());
+            preparedStatement.setString(2, customer.getLastName());
+            preparedStatement.setString(3, customer.getMobileNumber());
+            preparedStatement.setString(4, customer.getEmail());
+            preparedStatement.setString(5, customer.getUsername());
+            preparedStatement.setString(6, customer.getPassword());
+            preparedStatement.setString(7, customer.getAccountNumber());
+            preparedStatement.setDouble(8, customer.getAccountBalance());
+
+            preparedStatement.executeUpdate();
+        }
     }
 
-    private static boolean isUniqueAccountNumber(Connection connection, String accountNumber) throws SQLException {
-        String query = "SELECT COUNT(*) FROM customers WHERE account_number = ?";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setString(1, accountNumber);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                return resultSet.getInt(1) == 0;
-            }
-        }
-        return false;
+    private static void displayCustomerInfo(Customer customer) {
+        System.out.println();
+        System.out.println();
+        System.out.println();
+        System.out.println("Customer Profile:");
+        System.out.println("First Name: " + customer.getFirstName());
+        System.out.println("Last Name: " + customer.getLastName());
+        System.out.println("Mobile Number: " + customer.getMobileNumber());
+        System.out.println("Account Number: " + customer.getAccountNumber());
+        System.out.println("Account Balance: $" + customer.getAccountBalance());
+        System.out.println("Customer profile is created.");
+        System.out.println();
+        System.out.println();
+        System.out.println();
+
     }
 }
